@@ -3,7 +3,6 @@ package org.samples.docxconverters.jodconverter.pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -22,7 +21,7 @@ public class Conv_Word_PDF {
 
 		try {
 			initializeLibreOffice();
-			
+					
 			//llamamos la metodo adecuado (1 o 2 parametros)
 			if (args.length == 1){
 				//1 parametro: se crea el PDF en la misma ruta donde esta el .doc
@@ -61,6 +60,20 @@ public class Conv_Word_PDF {
 					createPDFByte(args[0],args[1]);
 				}
 				
+			}
+			else if (args.length == 3)
+			{	
+				if (args[0].contains("/") && args[0].endsWith(".doc") && args[1].contains("/") ){
+					String urlEntrada = args[0];
+					File fichero = new File(urlEntrada);
+					String urlSalida = args[1];			
+					String strNombrePdf = args[2];
+					if (fichero.exists()){
+						//a partir de la ruta de entrada dejamos el fichero de salida en la misma ruta
+						createPDFFile(args[0],args[1],args[2]);
+					}
+					
+				}
 			}
 			else
 			{
@@ -198,6 +211,36 @@ public class Conv_Word_PDF {
 		System.out.println(rutaSalida);
 		return rutaSalida;
 	}
+	
+	/**
+	 * 
+	 * @param rutaEntrada: ruta donde se encuentra el archivo PDF
+	 * @param rutaSalida: ruta donde se deja el archivo PDF
+	 * @param nombrePDF: nombre que se le da al archivo PDF
+	 * @return
+	 */
+	public static String createPDFFile (String rutaEntrada, String rutaSalida,String nombrePDF) {
+		try {
+			//1.- Init LibreOffice
+			if (initializeLibreOffice()){
+				//2.- call convert method
+				//crea el PDF en la ruta que se le indique
+				converter.convert(new File(rutaEntrada), new File(rutaSalida + "/" + nombrePDF + ".pdf"));
+				
+			}else{
+				throw new Exception();
+			}
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		
+		//devuelve el archivo PDF
+		System.out.println(rutaSalida + "/" + nombrePDF + ".pdf");
+		return rutaSalida + "/" + nombrePDF + ".pdf";
+	}
+	
+	
 
 	public static boolean initializeLibreOffice() {
 		
